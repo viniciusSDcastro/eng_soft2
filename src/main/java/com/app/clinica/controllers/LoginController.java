@@ -20,7 +20,8 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<Object> realizarLogin(@RequestBody LoginRecordDTO loginRecordDTO) {
         var usuario = usuarioRepository.findByEmail(loginRecordDTO.getEmail());
-        if (usuario.getSenha() != loginRecordDTO.getPassword()) {
+
+        if (!usuario.getSenha().equals(loginRecordDTO.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Login não é possivel");
         }
 

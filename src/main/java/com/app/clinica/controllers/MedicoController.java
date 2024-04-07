@@ -1,6 +1,7 @@
 package com.app.clinica.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +24,7 @@ import com.app.clinica.models.MedicoModel;
 import com.app.clinica.models.UsuarioModel;
 import com.app.clinica.repositories.MedicoRepository;
 import com.app.clinica.repositories.UsuarioRepository;
+import com.app.clinica.validators.TokenValidator;
 
 import jakarta.validation.Valid;
 
@@ -34,13 +37,18 @@ public class MedicoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @TokenValidator
     @GetMapping("/medicos")
-    public ResponseEntity<List<MedicoModel>> buscarMedicos() {
+    public ResponseEntity<List<MedicoModel>> buscarMedicos(
+            @RequestHeader Map<String, String> headers) {
         return ResponseEntity.status(HttpStatus.OK).body(medicoRepository.findAll());
     }
 
+    @TokenValidator
     @GetMapping("/medicos/{id}")
-    public ResponseEntity<Object> buscarMedicoPorId(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> buscarMedicoPorId(
+            @RequestHeader Map<String, String> headers,
+            @PathVariable(value = "id") UUID id) {
         Optional<MedicoModel> medico0 = medicoRepository.findById(id);
         if (medico0.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Medico não encontrado!");
@@ -48,13 +56,19 @@ public class MedicoController {
         return ResponseEntity.status(HttpStatus.OK).body(medico0.get());
     }
 
+    @TokenValidator
     @GetMapping("/medico_especialidade")
-    public ResponseEntity<List<MedicoModel>> buscarPorEspecialidade(@RequestParam String especialidade) {
+    public ResponseEntity<List<MedicoModel>> buscarPorEspecialidade(
+            @RequestHeader Map<String, String> headers,
+            @RequestParam String especialidade) {
         return ResponseEntity.status(HttpStatus.OK).body(medicoRepository.findByEspecialidade(especialidade));
     }
 
+    @TokenValidator
     @PostMapping("/medicos")
-    public ResponseEntity<MedicoModel> saveMedico(@RequestBody @Valid MedicoRecordDTO medicoRecordDto) {
+    public ResponseEntity<MedicoModel> saveMedico(
+            @RequestHeader Map<String, String> headers,
+            @RequestBody @Valid MedicoRecordDTO medicoRecordDto) {
         var medicoModel = new MedicoModel();
         BeanUtils.copyProperties(medicoRecordDto, medicoModel);
         var usuarioModel = new UsuarioModel();
@@ -65,8 +79,11 @@ public class MedicoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(medicoRepository.save(medicoModel));
     }
 
+    @TokenValidator
     @PutMapping("medicos/{id}")
-    public ResponseEntity<Object> atualizaMedico(@PathVariable(value = "id") UUID id,
+    public ResponseEntity<Object> atualizaMedico(
+            @RequestHeader Map<String, String> headers,
+            @PathVariable(value = "id") UUID id,
             @RequestBody @Valid MedicoRecordDTO medicoRecordDTO) {
         Optional<MedicoModel> medico0 = medicoRepository.findById(id);
         if (medico0.isEmpty()) {

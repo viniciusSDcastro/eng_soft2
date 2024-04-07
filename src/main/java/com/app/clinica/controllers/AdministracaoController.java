@@ -1,6 +1,7 @@
 package com.app.clinica.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.clinica.dto.AdministracaoRecordDTO;
@@ -21,6 +23,7 @@ import com.app.clinica.models.AdministracaoModel;
 import com.app.clinica.models.UsuarioModel;
 import com.app.clinica.repositories.AdministracaoRepository;
 import com.app.clinica.repositories.UsuarioRepository;
+import com.app.clinica.validators.TokenValidator;
 
 import jakarta.validation.Valid;
 
@@ -33,8 +36,10 @@ public class AdministracaoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @TokenValidator
     @PostMapping("/administracao")
     public ResponseEntity<AdministracaoModel> saveAdministracao(
+            @RequestHeader Map<String, String> headers,
             @RequestBody @Valid AdministracaoRecordDTO administracaoRecordDTO) {
         var administracaoModel = new AdministracaoModel();
         BeanUtils.copyProperties(administracaoRecordDTO, administracaoModel);
@@ -46,13 +51,18 @@ public class AdministracaoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(administracaoRepository.save(administracaoModel));
     }
 
+    @TokenValidator
     @GetMapping("/administracao")
-    public ResponseEntity<List<AdministracaoModel>> buscarAdministradores() {
+    public ResponseEntity<List<AdministracaoModel>> buscarAdministradores(
+            @RequestHeader Map<String, String> headers) {
         return ResponseEntity.status(HttpStatus.OK).body(administracaoRepository.findAll());
     }
 
+    @TokenValidator
     @GetMapping("/administracao/{id}")
-    public ResponseEntity<Object> buscarAdministradorPorId(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> buscarAdministradorPorId(
+            @RequestHeader Map<String, String> headers,
+            @PathVariable(value = "id") UUID id) {
         Optional<AdministracaoModel> administraador = administracaoRepository.findById(id);
         if (administraador.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Administrador não encontrado!");
@@ -60,8 +70,11 @@ public class AdministracaoController {
         return ResponseEntity.status(HttpStatus.OK).body(administraador.get());
     }
 
+    @TokenValidator
     @PutMapping("administracao/{id}")
-    public ResponseEntity<Object> atualizaAdministrador(@PathVariable(value = "id") UUID id,
+    public ResponseEntity<Object> atualizaAdministrador(
+            @RequestHeader Map<String, String> headers,
+            @PathVariable(value = "id") UUID id,
             @RequestBody @Valid AdministracaoRecordDTO administracaoRecordDTO) {
         Optional<AdministracaoModel> administraador = administracaoRepository.findById(id);
         if (administraador.isEmpty()) {

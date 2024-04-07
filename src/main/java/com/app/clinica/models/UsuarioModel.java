@@ -92,7 +92,6 @@ public class UsuarioModel implements Serializable {
 
     public void geraSenha() {
         var senhaPadrao = this.cpf.substring(0, 3) + '@' + this.nome.substring(0, 2).toLowerCase();
-        System.out.println(senhaPadrao);
         var senhaCriptografada = BCrypt.hashpw(senhaPadrao, BCrypt.gensalt());
         this.senha = senhaCriptografada;
     }

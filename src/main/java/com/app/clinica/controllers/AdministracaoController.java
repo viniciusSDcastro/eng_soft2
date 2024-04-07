@@ -40,6 +40,7 @@ public class AdministracaoController {
         BeanUtils.copyProperties(administracaoRecordDTO, administracaoModel);
         var usuarioModel = new UsuarioModel();
         BeanUtils.copyProperties(administracaoRecordDTO, usuarioModel);
+        usuarioModel.geraSenha();
         UsuarioModel user = usuarioRepository.save(usuarioModel);
         administracaoModel.setUsuario(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(administracaoRepository.save(administracaoModel));

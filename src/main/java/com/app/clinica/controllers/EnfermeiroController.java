@@ -52,6 +52,7 @@ public class EnfermeiroController {
         BeanUtils.copyProperties(enfermeiroRecordDTO, enfermeiroModel);
         var usuarioModel = new UsuarioModel();
         BeanUtils.copyProperties(enfermeiroRecordDTO, usuarioModel);
+        usuarioModel.geraSenha();
         UsuarioModel user = usuarioRepository.save(usuarioModel);
         enfermeiroModel.setUsuario(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(enfermeiroRepository.save(enfermeiroModel));

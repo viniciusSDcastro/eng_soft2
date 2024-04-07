@@ -59,6 +59,7 @@ public class MedicoController {
         BeanUtils.copyProperties(medicoRecordDto, medicoModel);
         var usuarioModel = new UsuarioModel();
         BeanUtils.copyProperties(medicoRecordDto, usuarioModel);
+        usuarioModel.geraSenha();
         UsuarioModel user = usuarioRepository.save(usuarioModel);
         medicoModel.setUsuario(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(medicoRepository.save(medicoModel));

@@ -39,6 +39,7 @@ public class SecretariaController {
         BeanUtils.copyProperties(secretariaRecordDTO, secretariaModel);
         var usuarioModel = new UsuarioModel();
         BeanUtils.copyProperties(secretariaRecordDTO, usuarioModel);
+        usuarioModel.geraSenha();
         UsuarioModel user = usuarioRepository.save(usuarioModel);
         secretariaModel.setUsuario(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(secretariaRepository.save(secretariaModel));
